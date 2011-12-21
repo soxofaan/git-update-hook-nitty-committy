@@ -27,7 +27,7 @@ import logging
 # TODO: normalize messages (capitalization, non alphanum characters, ...)
 
 def git_log(begin, end):
-    proc = subprocess.Popen(['git', 'log', '--format=%an:%cn:%s', begin + '..' + end], stdout=subprocess.PIPE)
+    proc = subprocess.Popen(['git', 'log', '--no-merges', '--format=%an:%cn:%s', begin + '..' + end], stdout=subprocess.PIPE)
     stdout = proc.communicate()[0]
     assert proc.returncode == 0
     log = []
