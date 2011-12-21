@@ -29,6 +29,7 @@ import logging
 def git_log(begin, end):
     proc = subprocess.Popen(['git', 'log', '--format=%an:%cn:%s', begin + '..' + end], stdout=subprocess.PIPE)
     stdout = proc.communicate()[0]
+    assert proc.returncode == 0
     log = []
     for line in stdout.split('\n'):
         if len(line) > 1:
@@ -100,6 +101,11 @@ if __name__ == '__main__':
 
     logging.debug('sys.argv = {0!r}'.format(sys.argv))
     (ref, current, new) = sys.argv[1:4]
+
+    if current == '0000000000000000000000000000000000000000':
+        # Pushing a new branch/tag: not easy to do a git log here.
+        # TODO: support checking of new branches
+        sys.exit(0)
 
     # Get log messages
     log = git_log(current, new)
