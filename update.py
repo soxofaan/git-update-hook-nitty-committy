@@ -21,9 +21,9 @@ import sqlite3
 import logging
 import re
 
-
-# TODO: support for pushing new branches (00000)
-# TODO: support for non-fast forward pushes
+# TODO: support for pushing new branches (instead of ignoring them)
+# TODO: work with config file to define behavior: block push, delay push, randomly block push, trigger command, keep user score, ...
+# TODO: trim off long tail from database (regularly, based on db file size, row count, time?)
 
 def git_log(begin, end):
     proc = subprocess.Popen(['git', 'log', '--no-merges', '--format=%an:%cn:%s', begin + '..' + end], stdout=subprocess.PIPE)
