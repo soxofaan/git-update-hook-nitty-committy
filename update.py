@@ -63,15 +63,6 @@ class MessageHistogram(object):
         ''')
         conn.commit()
 
-    def get_count(self, message):
-        '''Get the count for a message'''
-        c = self._conn.cursor()
-        c.execute('SELECT count FROM message_histogram WHERE message = ? LIMIT 1', (message,))
-        count = c.fetchone()
-        if count == None:
-            count = 0
-        return count
-
     def increase(self, message):
         '''Increase the count for a message'''
         c = self._conn.cursor()
