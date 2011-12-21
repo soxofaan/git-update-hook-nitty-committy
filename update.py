@@ -51,7 +51,7 @@ class MessageHistogram(object):
 
     @classmethod
     def create_database(cls, db_file_name):
-        logging.debug('creating database')
+        logging.debug('Creating database in file "{0}".'.format(db_file_name))
         conn = sqlite3.connect(db_file_name)
         c = conn.cursor()
         c.execute('''
@@ -80,6 +80,7 @@ class MessageHistogram(object):
         except sqlite3.IntegrityError:
             c.execute('UPDATE message_histogram SET count = count + 1 WHERE message = :msg', {'msg': message})
         self._conn.commit()
+        logging.debug('Increased count for message "{0}"'.format(message))
 
     def get_top_n_messages(self, n=10):
         '''Get the top N messages.'''
@@ -116,7 +117,7 @@ def main():
 
     for (author, committer, msg) in log:
         if histogram.in_top_n(msg):
-            print 'Warning: bad commit message (by {author}): "{msg}"'.format(msg=msg, author=author)
+            print 'Warning: I don\'t like this commit message (by {author}): "{msg}"'.format(msg=msg, author=author)
         histogram.increase(msg)
 
 
