@@ -32,7 +32,7 @@ def git_log(begin, end):
     log = []
     for line in stdout.split('\n'):
         if len(line) > 1:
-            log.append(tuple(line.split(':')))
+            log.append(tuple(line.split(':', 2)))
     return log
 
 
