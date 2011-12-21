@@ -119,5 +119,5 @@ if __name__ == '__main__':
             print 'Warning: bad commit message (by {author}): "{msg}"'.format(msg=msg, author=author)
         histogram.increase(msg)
 
-    sys.exit(1)
+
 
