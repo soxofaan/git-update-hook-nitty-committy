@@ -23,7 +23,6 @@ import logging
 
 # TODO: support for pushing new branches (00000)
 # TODO: support for non-fast forward pushes
-# Safeguard against crashes: don't block pushe when wsomething fails
 # TODO: normalize messages (capitalization, non alphanum characters, ...)
 
 def git_log(begin, end):
@@ -96,7 +95,8 @@ class MessageHistogram(object):
                 return count
 
 
-if __name__ == '__main__':
+
+def main():
     logging.basicConfig(level=logging.DEBUG)
 
     logging.debug('sys.argv = {0!r}'.format(sys.argv))
@@ -120,4 +120,10 @@ if __name__ == '__main__':
         histogram.increase(msg)
 
 
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception, e:
+        print sys.argv[0], 'failed with exception:', repr(e)
 
