@@ -19,11 +19,11 @@ import sys
 import subprocess
 import sqlite3
 import logging
+import re
 
 
 # TODO: support for pushing new branches (00000)
 # TODO: support for non-fast forward pushes
-# TODO: normalize messages (capitalization, non alphanum characters, ...)
 
 def git_log(begin, end):
     proc = subprocess.Popen(['git', 'log', '--no-merges', '--format=%an:%cn:%s', begin + '..' + end], stdout=subprocess.PIPE)
@@ -35,6 +35,14 @@ def git_log(begin, end):
             log.append(tuple(line.split(':', 2)))
     return log
 
+def normalize_message(message):
+    '''
+    Normalize a message by collapsing whitespace, removing capitalization, unimportant characters, ...
+    '''
+    message = message.lower()
+    message = re.sub('[^a-z0-9 ]', '', message)
+    message = re.sub('\s+', ' ', message)
+    return message
 
 class MessageHistogram(object):
     '''
@@ -107,6 +115,7 @@ def main():
     histogram = MessageHistogram(filename)
 
     for (author, committer, msg) in log:
+        msg = normalize_message(msg)
         if histogram.in_top_n(msg):
             print 'Warning: I don\'t like this commit message (by {author}): "{msg}"'.format(msg=msg, author=author)
         histogram.increase(msg)
