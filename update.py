@@ -137,7 +137,7 @@ def main():
     (options, args) = parser.parse_args()
 
 
-    db_filename = os.path.splitext(__file__)[0] + '.db.sqlite'
+    db_filename = os.path.splitext(__file__)[0] + '.messagehistogram.sqlite'
 
 
     if options.dbdump:
