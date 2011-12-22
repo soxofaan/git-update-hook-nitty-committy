@@ -77,6 +77,19 @@ class MessageHistogramTest(unittest.TestCase):
         self.assertTrue(h.in_top_n('bb'))
         self.assertFalse(h.in_top_n('ccc'))
 
+    def test_delete(self):
+        db_file = os.path.join(self._work_dir, 'db.sqlite')
+        h = update.MessageHistogram(db_file)
+        h.observe('a')
+        h.observe('bb')
+        h.observe('a')
+        h.observe('ccc')
+        h.observe('a')
+        h.observe('bb')
+        h.delete('a')
+        top_n = h.get_top_n_messages(n=5)
+        expected = [('bb', 2), ('ccc', 1)]
+        self.assertEqual(top_n, expected)
 
 class ConfigLoadTest(unittest.TestCase):
 
