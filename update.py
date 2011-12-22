@@ -46,19 +46,22 @@ def normalize_message(message):
 
 class MessageHistogram(object):
     '''
-    Wrapper class that manages a message histrogram
+    Wrapper class that manages a message histrogram in an sqlite database file
     '''
 
     def __init__(self, db_file_name):
         logging.debug('MessageHistogram from file ' + db_file_name)
 
         if not os.path.exists(db_file_name):
-            MessageHistogram.create_database(db_file_name)
+            MessageHistogram._create_database(db_file_name)
 
         self._conn = sqlite3.connect(db_file_name)
 
     @classmethod
-    def create_database(cls, db_file_name):
+    def _create_database(cls, db_file_name):
+        '''
+        Create the database and tables in given sqlite file.
+        '''
         logging.debug('Creating database in file "{0}".'.format(db_file_name))
         conn = sqlite3.connect(db_file_name)
         c = conn.cursor()
@@ -71,8 +74,8 @@ class MessageHistogram(object):
         ''')
         conn.commit()
 
-    def increase(self, message):
-        '''Increase the count for a message'''
+    def observe(self, message):
+        '''Observe a message: increase its counter.'''
         c = self._conn.cursor()
         try:
             c.execute('INSERT INTO message_histogram (message, count) VALUES (:msg, 1)', {'msg': message})
@@ -118,7 +121,7 @@ def main():
         msg = normalize_message(msg)
         if histogram.in_top_n(msg):
             print 'Warning: I don\'t like this commit message (by {author}): "{msg}"'.format(msg=msg, author=author)
-        histogram.increase(msg)
+        histogram.observe(msg)
 
 
 
