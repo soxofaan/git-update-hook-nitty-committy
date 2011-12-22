@@ -168,6 +168,10 @@ def main():
             # TODO: support checking of new branches
             return
 
+        if new == '0000000000000000000000000000000000000000':
+            # Removing a ref: nothing to do.
+            return
+
         # Get log messages
         log = git_log(current, new)
 
