@@ -23,7 +23,12 @@ import re
 
 # TODO: support for pushing new branches (instead of ignoring them)
 # TODO: work with config file to define behavior: block push, delay push, randomly block push, trigger command, keep user score, ...
+# TODO: config to set logging level/target
+# TODO: config to set top N size
 # TODO: trim off long tail from database (regularly, based on db file size, row count, time?)
+# TODO: add command line interface to query/reset/trim the histogram
+# TODO: keep user score/karma
+
 
 def git_log(begin, end):
     proc = subprocess.Popen(['git', 'log', '--no-merges', '--format=%an:%cn:%s', begin + '..' + end], stdout=subprocess.PIPE)
