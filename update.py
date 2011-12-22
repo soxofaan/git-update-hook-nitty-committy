@@ -62,7 +62,7 @@ def normalize_message(message):
     '''
     message = message.lower()
     message = re.sub('[^a-z0-9 ]', '', message)
-    message = re.sub('\s+', ' ', message)
+    message = re.sub('\s+', ' ', message).strip()
     return message
 
 class MessageHistogram(object):
