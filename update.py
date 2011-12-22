@@ -44,6 +44,12 @@ import json
 # TODO: keep user score/karma
 
 
+# Default configuration settings.
+DEFAULT_CONFIG ={
+    "top-size": 20,
+}
+
+
 
 def git_log(begin, end):
     proc = subprocess.Popen(['git', 'log', '--no-merges', '--format=%an:%cn:%s', begin + '..' + end], stdout=subprocess.PIPE)
@@ -130,11 +136,9 @@ class MessageHistogram(object):
 
 
 def load_config(config_filename):
-
     # Start with default config values
-    config = {
-        'top-size': '20',
-    }
+    global DEFAULT_CONFIG
+    config = DEFAULT_CONFIG
 
     # If available: load a config file and override default values.
     try:
