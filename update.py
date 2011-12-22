@@ -37,7 +37,6 @@ import json
 
 # TODO: support for pushing new branches (instead of ignoring them)
 # TODO: work with config file to define behavior: block push, delay push, randomly block push, trigger command, keep user score, ...
-# TODO: config to set logging level/target
 # TODO: trim off long tail from database (regularly, based on db file size, row count, time?)
 # TODO: add command line interface to query/reset/trim the histogram
 # TODO: keep user score/karma
@@ -47,6 +46,7 @@ import json
 DEFAULT_CONFIG = {
     "top-size": 20,
     "white-list": [],
+    "log-level": logging.WARNING,
 }
 
 
@@ -153,7 +153,14 @@ def load_config(config_filename):
 
 
 def main():
-    logging.basicConfig(level=logging.WARNING)
+    # Load config values form (optional) config file.
+    config_filename = os.path.splitext(__file__)[0] + '.cfg'
+    config = load_config(config_filename)
+
+    # Set log level according to config.
+    log_level = config['log-level']
+    logging.basicConfig(level=log_level)
+
     logging.debug('sys.argv = {0!r}'.format(sys.argv))
 
     parser = optparse.OptionParser(usage='%prog [options] [ref currsha1 newsha1]')
@@ -176,10 +183,7 @@ def main():
 
     (options, args) = parser.parse_args()
 
-    # Load config values.
-    config_filename = os.path.splitext(__file__)[0] + '.cfg'
-    config = load_config(config_filename)
-
+    # Get settings from config
     top_size = config['top-size']
     white_list = [normalize_message(msg) for msg in config['white-list']]
 
