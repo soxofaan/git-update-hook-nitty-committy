@@ -33,7 +33,7 @@ import sqlite3
 import logging
 import re
 import optparse
-import ConfigParser
+import json
 
 # TODO: support for pushing new branches (instead of ignoring them)
 # TODO: work with config file to define behavior: block push, delay push, randomly block push, trigger command, keep user score, ...
@@ -129,6 +129,22 @@ class MessageHistogram(object):
                 return count
 
 
+def load_config(config_filename):
+
+    # Start with default config values
+    config = {
+        'top-size': '20',
+    }
+
+    # If available: load a config file and override default values.
+    try:
+        with open(config_filename, 'r') as f:
+            config.update(json.load(f))
+    except:
+        # No valid config found.
+        pass
+
+    return config
 
 def main():
     logging.basicConfig(level=logging.WARNING)
@@ -156,15 +172,9 @@ def main():
 
     # Load config values.
     config_filename = os.path.splitext(__file__)[0] + '.cfg'
-    logging.debug('Trying to get config from "{0}"'.format(config_filename))
-
-    config_defaults = {
-        'top-size': '20',
-    }
-    config = ConfigParser.ConfigParser(defaults=config_defaults)
-    config.read([config_filename])
-
-    top_size = config.get('Nitty Committy', 'top-size')
+    config = load_config(config_filename)
+    
+    top_size = config['top-size']
 
     db_filename = os.path.splitext(__file__)[0] + '.messagehistogram.sqlite'
 
