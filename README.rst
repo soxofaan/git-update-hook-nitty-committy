@@ -3,6 +3,7 @@ Git update hook Nitty Committy
 Git update hook that manages a commit message histogram
 and complains about or blocks pushes with messages that are too common.
 
+
 Usage as hook
 -------------
 
@@ -20,13 +21,19 @@ As a hook, this script will be invoked by git with three arguments:
 Depending on the operational mode, the hook will just complain on standard output
 with a warning or block the git push.
 
+
 Additional usage
 ----------------
+
 Additionally you can also invoke this script manually without with extra
 options (and possibly without those hook-related argments) 
 for inspection or additional functionality. 
 Use option --help for more info.
 
+
 Configuration
 -------------
-TBW
+
+The hook can be configured with a (JSON) config file ``update.cfg``
+in the same folder as the update hook.
+See the sample config file for an illustration.
