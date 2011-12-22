@@ -19,7 +19,7 @@ class UpdateTest(unittest.TestCase):
         ('foo', 'foo'),
         ('FOO', 'foo'),
         ('bar    bal', 'bar bal'),
-        (' bar  \t  bal ', ' bar bal '),
+        (' bar  \t  bal ', 'bar bal'),
         ('a:B: c%D!e...', 'ab cde'),
         ]
         for message, expected in data:
