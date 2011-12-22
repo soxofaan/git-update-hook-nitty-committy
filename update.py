@@ -38,7 +38,6 @@ import json
 # TODO: support for pushing new branches (instead of ignoring them)
 # TODO: work with config file to define behavior: block push, delay push, randomly block push, trigger command, keep user score, ...
 # TODO: config to set logging level/target
-# TODO: support for whitelisted commit messages (e.g. automated system commits)
 # TODO: trim off long tail from database (regularly, based on db file size, row count, time?)
 # TODO: add command line interface to query/reset/trim the histogram
 # TODO: keep user score/karma
@@ -47,6 +46,7 @@ import json
 # Default configuration settings.
 DEFAULT_CONFIG = {
     "top-size": 20,
+    "white-list": [],
 }
 
 
@@ -181,6 +181,7 @@ def main():
     config = load_config(config_filename)
 
     top_size = config['top-size']
+    white_list = [normalize_message(msg) for msg in config['white-list']]
 
     db_filename = os.path.splitext(__file__)[0] + '.messagehistogram.sqlite'
 
@@ -223,6 +224,8 @@ def main():
 
         for (author, committer, msg) in log:
             msg = normalize_message(msg)
+            if msg in white_list:
+                continue
             if histogram.in_top_n(msg, n=top_size):
                 print 'Warning: I don\'t like this commit message (by {author}): "{msg}"'.format(msg=msg, author=author)
             histogram.observe(msg)
