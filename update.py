@@ -133,6 +133,10 @@ def main():
         dest='topdump', action='store_true', default=False,
         help='Show the top "forbidden" messages of the message histogram.',
     )
+    parser.add_option('--observe', metavar='MSG',
+        dest='to_observe', action='append', default=[],
+        help='Observe/add the given messages to the histogram.',
+    )
 
     (options, args) = parser.parse_args()
 
@@ -148,6 +152,10 @@ def main():
         histogram = MessageHistogram(db_filename)
         for message, count in histogram.get_top_n_messages(10):
             print '{0:6d} {1}'.format(count, message)
+    elif len(options.to_observe) > 0:
+        histogram = MessageHistogram(db_filename)
+        for msg in options.to_observe:
+            histogram.observe(msg)
     else:
         if len(args) != 3:
             parser.error('Three arguments expected')
