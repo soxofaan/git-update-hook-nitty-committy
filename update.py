@@ -123,7 +123,7 @@ class MessageHistogram(object):
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.WARNING)
     logging.debug('sys.argv = {0!r}'.format(sys.argv))
 
     parser = optparse.OptionParser(usage='%prog [options] [ref currsha1 newsha1]')
