@@ -12,6 +12,16 @@ Usage:
 -----
 Copy/symlink update.py to hooks/update in the git repo to protect.
 
+This script will be invoked by git with three arguments: 
+1) ref name
+2) current SHA1 of that ref (or 0000...0 for new refs)
+3) newly pushed SHA1 for the ref
+
+Additionally you can also invoke this script manually without with extra
+options (and possibly without those hook-related argments) 
+for inspection or additional functionality. 
+Use option --help for more info.
+
 '''
 
 import os
@@ -20,6 +30,7 @@ import subprocess
 import sqlite3
 import logging
 import re
+import optparse
 
 # TODO: support for pushing new branches (instead of ignoring them)
 # TODO: work with config file to define behavior: block push, delay push, randomly block push, trigger command, keep user score, ...
@@ -89,6 +100,11 @@ class MessageHistogram(object):
         self._conn.commit()
         logging.debug('Increased count for message "{0}"'.format(message))
 
+    def dump_messages(self):
+        c = self._conn.cursor()
+        c.execute('SELECT message, count FROM message_histogram')
+        return c.fetchall()
+
     def get_top_n_messages(self, n=10):
         '''Get the top N messages.'''
         c = self._conn.cursor()
@@ -106,27 +122,53 @@ class MessageHistogram(object):
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
-
     logging.debug('sys.argv = {0!r}'.format(sys.argv))
-    (ref, current, new) = sys.argv[1:4]
 
-    if current == '0000000000000000000000000000000000000000':
-        # Pushing a new branch/tag: not easy to do a git log here.
-        # TODO: support checking of new branches
-        sys.exit(0)
+    parser = optparse.OptionParser(usage='%prog [options] [ref currsha1 newsha1]')
+    parser.add_option('--dbdump',
+        dest='dbdump', action='store_true', default=False,
+        help='Dump the complete message histogram database',
+    )
+    parser.add_option('--top',
+        dest='topdump', action='store_true', default=False,
+        help='Show the top "forbidden" messages of the message histogram.',
+    )
 
-    # Get log messages
-    log = git_log(current, new)
+    (options, args) = parser.parse_args()
 
-    # Load commit message database
-    filename = os.path.splitext(__file__)[0] + '.db.sqlite'
-    histogram = MessageHistogram(filename)
 
-    for (author, committer, msg) in log:
-        msg = normalize_message(msg)
-        if histogram.in_top_n(msg):
-            print 'Warning: I don\'t like this commit message (by {author}): "{msg}"'.format(msg=msg, author=author)
-        histogram.observe(msg)
+    db_filename = os.path.splitext(__file__)[0] + '.db.sqlite'
+
+
+    if options.dbdump:
+        histogram = MessageHistogram(db_filename)
+        for message, count in histogram.dump_messages():
+            print '{0:6d} {1}'.format(count, message)
+    elif options.topdump:
+        histogram = MessageHistogram(db_filename)
+        for message, count in histogram.get_top_n_messages(10):
+            print '{0:6d} {1}'.format(count, message)
+    else:
+        if len(args) != 3:
+            parser.error('Three arguments expected')
+        (ref, current, new) = args
+
+        if current == '0000000000000000000000000000000000000000':
+            # Pushing a new branch/tag: not easy to do a git log here.
+            # TODO: support checking of new branches
+            return
+
+        # Get log messages
+        log = git_log(current, new)
+
+        # Load commit message database
+        histogram = MessageHistogram(db_filename)
+
+        for (author, committer, msg) in log:
+            msg = normalize_message(msg)
+            if histogram.in_top_n(msg):
+                print 'Warning: I don\'t like this commit message (by {author}): "{msg}"'.format(msg=msg, author=author)
+            histogram.observe(msg)
 
 
 
