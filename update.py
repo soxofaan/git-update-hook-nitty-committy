@@ -123,7 +123,7 @@ class MessageHistogram(object):
 
     def in_top_n(self, message, n=10):
         '''Check whether the given message is in the top N (and return the given count if so).'''
-        top_n = self.get_top_n_messages(n)
+        top_n = self.get_top_n_messages(n=n)
         for msg, count in top_n:
             if msg == message:
                 return count
@@ -157,6 +157,7 @@ def main():
 
     db_filename = os.path.splitext(__file__)[0] + '.messagehistogram.sqlite'
 
+    N = 20
 
     if options.dbdump:
         histogram = MessageHistogram(db_filename)
@@ -164,7 +165,7 @@ def main():
             print '{0:6d} {1}'.format(count, message)
     elif options.topdump:
         histogram = MessageHistogram(db_filename)
-        for message, count in histogram.get_top_n_messages(10):
+        for message, count in histogram.get_top_n_messages(N):
             print '{0:6d} {1}'.format(count, message)
     elif len(options.to_observe) > 0:
         histogram = MessageHistogram(db_filename)
@@ -197,7 +198,7 @@ def main():
 
         for (author, committer, msg) in log:
             msg = normalize_message(msg)
-            if histogram.in_top_n(msg):
+            if histogram.in_top_n(msg, n=N):
                 print 'Warning: I don\'t like this commit message (by {author}): "{msg}"'.format(msg=msg, author=author)
             histogram.observe(msg)
 
