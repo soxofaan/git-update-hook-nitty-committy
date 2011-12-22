@@ -77,5 +77,33 @@ class MessageHistogramTest(unittest.TestCase):
         self.assertTrue(h.in_top_n('bb'))
         self.assertFalse(h.in_top_n('ccc'))
 
+
+class ConfigLoadTest(unittest.TestCase):
+
+    def setUp(self):
+        self._work_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self._work_dir)
+
+    def test_no_config_file(self):
+        config = update.load_config('foobar.cfg')
+        self.assertEqual(config, update.DEFAULT_CONFIG)
+
+    def test_invalid_config_file(self):
+        config_file = os.path.join(self._work_dir, 'invalid.cfg')
+        with open(config_file, 'w') as f:
+            f.write('This is <em>not</em> JSON\n')
+        config = update.load_config(config_file)
+        self.assertEqual(config, update.DEFAULT_CONFIG)
+
+    def test_config_file(self):
+        config_file = os.path.join(self._work_dir, 'config.cfg')
+        with open(config_file, 'w') as f:
+            f.write('{"top-size": 234}')
+        config = update.load_config(config_file)
+        self.assertEqual(config['top-size'], 234)
+
+
 if __name__ == '__main__':
     unittest.main()
