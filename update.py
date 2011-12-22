@@ -38,9 +38,12 @@ import optparse
 # TODO: work with config file to define behavior: block push, delay push, randomly block push, trigger command, keep user score, ...
 # TODO: config to set logging level/target
 # TODO: config to set top N size
+# TODO: support for whitelisted commit messages (e.g. automated system commits)
 # TODO: trim off long tail from database (regularly, based on db file size, row count, time?)
 # TODO: add command line interface to query/reset/trim the histogram
 # TODO: keep user score/karma
+# TODO: add cli option to remove an entry from the database
+
 
 
 def git_log(begin, end):
