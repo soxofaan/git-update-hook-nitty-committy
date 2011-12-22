@@ -12,7 +12,7 @@ Usage as hook
 -------------
 Copy/symlink update.py to hooks/update in the git repo to protect.
 
-This script will be invoked by git with three arguments: 
+This script will be invoked by git with three arguments:
 1) ref name
 2) current SHA1 of that ref (or 0000...0 for new refs)
 3) newly pushed SHA1 for the ref
@@ -20,8 +20,8 @@ This script will be invoked by git with three arguments:
 Additional usage
 ----------------
 Additionally you can also invoke this script manually without with extra
-options (and possibly without those hook-related argments) 
-for inspection or additional functionality. 
+options (and possibly without those hook-related argments)
+for inspection or additional functionality.
 Use option --help for more info.
 
 '''
@@ -45,10 +45,9 @@ import json
 
 
 # Default configuration settings.
-DEFAULT_CONFIG ={
+DEFAULT_CONFIG = {
     "top-size": 20,
 }
-
 
 
 def git_log(begin, end):
@@ -61,6 +60,7 @@ def git_log(begin, end):
             log.append(tuple(line.split(':', 2)))
     return log
 
+
 def normalize_message(message):
     '''
     Normalize a message by collapsing whitespace, removing capitalization, unimportant characters, ...
@@ -69,6 +69,7 @@ def normalize_message(message):
     message = re.sub('[^a-z0-9 ]', '', message)
     message = re.sub('\s+', ' ', message).strip()
     return message
+
 
 class MessageHistogram(object):
     '''
@@ -150,6 +151,7 @@ def load_config(config_filename):
 
     return config
 
+
 def main():
     logging.basicConfig(level=logging.WARNING)
     logging.debug('sys.argv = {0!r}'.format(sys.argv))
@@ -177,11 +179,10 @@ def main():
     # Load config values.
     config_filename = os.path.splitext(__file__)[0] + '.cfg'
     config = load_config(config_filename)
-    
+
     top_size = config['top-size']
 
     db_filename = os.path.splitext(__file__)[0] + '.messagehistogram.sqlite'
-
 
     if options.dbdump:
         histogram = MessageHistogram(db_filename)
@@ -227,10 +228,8 @@ def main():
             histogram.observe(msg)
 
 
-
 if __name__ == '__main__':
     try:
         main()
     except Exception, e:
         print sys.argv[0], 'failed with exception:', repr(e)
-

@@ -38,7 +38,7 @@ class MessageHistogramTest(unittest.TestCase):
     def test_constructor(self):
         db_file = os.path.join(self._work_dir, 'db.sqlite')
         self.assertFalse(os.path.exists(db_file))
-        h = update.MessageHistogram(db_file)
+        update.MessageHistogram(db_file)
         self.assertTrue(os.path.exists(db_file))
 
     def test_observe(self):
