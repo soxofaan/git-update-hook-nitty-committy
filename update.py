@@ -33,11 +33,11 @@ import sqlite3
 import logging
 import re
 import optparse
+import ConfigParser
 
 # TODO: support for pushing new branches (instead of ignoring them)
 # TODO: work with config file to define behavior: block push, delay push, randomly block push, trigger command, keep user score, ...
 # TODO: config to set logging level/target
-# TODO: config to set top N size
 # TODO: support for whitelisted commit messages (e.g. automated system commits)
 # TODO: trim off long tail from database (regularly, based on db file size, row count, time?)
 # TODO: add command line interface to query/reset/trim the histogram
@@ -154,10 +154,20 @@ def main():
 
     (options, args) = parser.parse_args()
 
+    # Load config values.
+    config_filename = os.path.splitext(__file__)[0] + '.cfg'
+    logging.debug('Trying to get config from "{0}"'.format(config_filename))
+
+    config_defaults = {
+        'top-size': '20',
+    }
+    config = ConfigParser.ConfigParser(defaults=config_defaults)
+    config.read([config_filename])
+
+    top_size = config.get('Nitty Committy', 'top-size')
 
     db_filename = os.path.splitext(__file__)[0] + '.messagehistogram.sqlite'
 
-    N = 20
 
     if options.dbdump:
         histogram = MessageHistogram(db_filename)
@@ -165,7 +175,7 @@ def main():
             print '{0:6d} {1}'.format(count, message)
     elif options.topdump:
         histogram = MessageHistogram(db_filename)
-        for message, count in histogram.get_top_n_messages(N):
+        for message, count in histogram.get_top_n_messages(top_size):
             print '{0:6d} {1}'.format(count, message)
     elif len(options.to_observe) > 0:
         histogram = MessageHistogram(db_filename)
@@ -198,7 +208,7 @@ def main():
 
         for (author, committer, msg) in log:
             msg = normalize_message(msg)
-            if histogram.in_top_n(msg, n=N):
+            if histogram.in_top_n(msg, n=top_size):
                 print 'Warning: I don\'t like this commit message (by {author}): "{msg}"'.format(msg=msg, author=author)
             histogram.observe(msg)
 
