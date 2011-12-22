@@ -47,6 +47,7 @@ DEFAULT_CONFIG = {
     "top-size": 20,
     "white-list": [],
     "log-level": logging.WARNING,
+    "db-filename": os.path.splitext(__file__)[0] + '.messagehistogram.sqlite',
 }
 
 
@@ -186,8 +187,7 @@ def main():
     # Get settings from config
     top_size = config['top-size']
     white_list = [normalize_message(msg) for msg in config['white-list']]
-
-    db_filename = os.path.splitext(__file__)[0] + '.messagehistogram.sqlite'
+    db_filename = config['db-filename']
 
     if options.dbdump:
         histogram = MessageHistogram(db_filename)
