@@ -42,7 +42,6 @@ import optparse
 # TODO: trim off long tail from database (regularly, based on db file size, row count, time?)
 # TODO: add command line interface to query/reset/trim the histogram
 # TODO: keep user score/karma
-# TODO: add cli option to remove an entry from the database
 
 
 
@@ -105,6 +104,12 @@ class MessageHistogram(object):
         self._conn.commit()
         logging.debug('Increased count for message "{0}"'.format(message))
 
+    def delete(self, message):
+        '''Remove the entry for a message.'''
+        c = self._conn.cursor()
+        c.execute('DELETE FROM message_histogram WHERE message = :msg', {'msg': message})
+        self._conn.commit()
+
     def dump_messages(self):
         c = self._conn.cursor()
         c.execute('SELECT message, count FROM message_histogram')
@@ -142,6 +147,10 @@ def main():
         dest='to_observe', action='append', default=[],
         help='Observe/add the given messages to the histogram.',
     )
+    parser.add_option('--delete', metavar='MSG',
+        dest='to_delete', action='append', default=[],
+        help='Delete the given messages from the histogram.',
+    )
 
     (options, args) = parser.parse_args()
 
@@ -161,6 +170,11 @@ def main():
         histogram = MessageHistogram(db_filename)
         for msg in options.to_observe:
             histogram.observe(msg)
+    elif len(options.to_delete) > 0:
+        histogram = MessageHistogram(db_filename)
+        for msg in options.to_delete:
+            histogram.delete(msg)
+
     else:
         if len(args) != 3:
             parser.error('Three arguments expected')
