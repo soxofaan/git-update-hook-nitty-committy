@@ -37,3 +37,10 @@ Configuration
 The hook can be configured with a (JSON) config file ``update.cfg``
 in the same folder as the update hook.
 See the sample config file for an illustration.
+
+
+Dependencies, requirements
+--------------------------
+
+This hook requires Python 2.6 (usage of the json module)
+and just uses standard library modules (such as the sqlite3 module for persistence storage).
