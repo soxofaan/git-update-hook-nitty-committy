@@ -26,13 +26,16 @@ import json
 # TODO: add command line interface to query/reset/trim the histogram
 # TODO: keep user score/karma
 
+# Where the hook scripts live (relative to git repo root).
+# Used to search for configs and store database.
+HOOK_DIR = '.git/hooks'
 
 # Default configuration settings.
 DEFAULT_CONFIG = {
     "top-size": 20,
     "white-list": [],
     "log-level": logging.WARNING,
-    "db-filename": os.path.splitext(__file__)[0] + '.messagehistogram.sqlite',
+    "db-filename": os.path.join(HOOK_DIR, 'update.nitty-committy.messagehistogram.sqlite'),
 }
 
 
@@ -140,7 +143,7 @@ def load_config(config_filename):
 
 def main():
     # Load config values form (optional) config file.
-    config_filename = os.path.splitext(__file__)[0] + '.cfg'
+    config_filename = os.path.join(HOOK_DIR, 'update.nitty-committy.cfg')
     config = load_config(config_filename)
 
     # Set log level according to config.
