@@ -19,6 +19,7 @@ import logging
 import re
 import optparse
 import json
+import commands
 
 # TODO: support for pushing new branches (instead of ignoring them)
 # TODO: work with config file to define behavior: block push, delay push, randomly block push, trigger command, keep user score, ...
@@ -28,7 +29,8 @@ import json
 
 # Where the hook scripts live (relative to git repo root).
 # Used to search for configs and store database.
-HOOK_DIR = '.git/hooks'
+HOOK_DIR = os.path.join(commands.getoutput('git rev-parse --git-dir'), 'hooks')
+
 
 # Default configuration settings.
 DEFAULT_CONFIG = {
